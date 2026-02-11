@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connexion</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>Connexion</h1>
+
+    <form id="loginForm" class="card">
+      <div class="form-row">
+        <label>Email</label>
+        <input name="email" type="email" required />
+      </div>
+      <div class="form-row">
+        <label>Mot de passe</label>
+        <input name="password" type="password" required />
+      </div>
+
+      <div class="btns">
+        <button type="submit">Se connecter</button>
+        <a class="btnlink" href="/">Retour</a>
+      </div>
+
+      <p class="muted small" id="status" hidden></p>
+    </form>
+  </main>
+
+  <script>
+    function setAuth(token, user) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const status = document.getElementById("status");
+      status.hidden = true;
+
+      const payload = {
+        email: e.target.email.value.trim(),
+        password: e.target.password.value,
+      };
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Connexion impossible");
+
+        setAuth(data.data.token, data.data.user);
+        window.location.href = "/";
+      } catch (err) {
+        status.textContent = "❌ " + err.message;
+        status.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>

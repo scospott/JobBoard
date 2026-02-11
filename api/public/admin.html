@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin • Job Board</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-mark">JB</div>
+        <div class="logo-text">
+          <div class="logo-title">Admin</div>
+          <div class="logo-sub">DB Monitoring</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-tab="advertisements" type="button"><span class="dot"></span> Advertisements</button>
+        <button class="nav-item" data-tab="companies" type="button"><span class="dot"></span> Companies</button>
+        <button class="nav-item" data-tab="applications" type="button"><span class="dot"></span> Applications</button>
+        <button class="nav-item" data-tab="people" type="button"><span class="dot"></span> People</button>
+        <a class="nav-item" href="/"><span class="dot"></span> Retour site</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="pill" id="adminInfo">—</div>
+        <div class="hint">Accès réservé admin (JWT).</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="search">
+          <input id="adminSearch" type="search" placeholder="Filtrer (client-side)..." />
+        </div>
+        <div class="top-actions">
+          <button class="secondary" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="content" style="grid-template-columns: 1fr;">
+        <section class="list">
+          <div class="cards" style="gap: 14px;">
+            <div id="toolbar" class="card"></div>
+            <div id="formWrap" class="card"></div>
+            <div id="tableWrap" class="card"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
