@@ -62,17 +62,48 @@ router.get("/advertisements", (req, res) =>
   list(Advertisement, req, res, { include: [{ model: Company }] })
 );
 router.post("/advertisements", async (req, res) => {
-  const created = await Advertisement.create({
-    company_id: req.body.company_id,
-    title: req.body.title,
-    short_description: req.body.short_description,
-    full_description: req.body.full_description,
-    salary: req.body.salary ?? null,
-    location: req.body.location ?? null,
-    working_time: req.body.working_time ?? null,
-  });
-  res.status(201).json({ data: created });
+  try {
+    const company_id = Number(req.body.company_id);
+
+    if (!Number.isInteger(company_id)) {
+      return res.status(400).json({ error: "company_id doit être un entier (ex: 1, 2)" });
+    }
+
+    const company = await Company.findByPk(company_id);
+    if (!company) {
+      return res.status(400).json({ error: `company_id invalide: aucune company avec id=${company_id}` });
+    }
+
+    if (!req.body.title || !req.body.short_description || !req.body.full_description) {
+      return res.status(400).json({ error: "Champs requis: title, short_description, full_description" });
+    }
+
+    const created = await Advertisement.create({
+      company_id,
+      title: req.body.title,
+      short_description: req.body.short_description,
+      full_description: req.body.full_description,
+      salary: req.body.salary ?? null,
+      location: req.body.location ?? null,
+      working_time: req.body.working_time ?? null,
+    });
+
+    res.status(201).json({ data: created });
+  } catch (e) {
+    console.error("POST /admin/advertisements error:", e);
+
+    // erreurs Sequelize connues => message lisible
+    if (e.name === "SequelizeForeignKeyConstraintError") {
+      return res.status(400).json({ error: "company_id ne correspond à aucune entreprise existante" });
+    }
+    if (e.name === "SequelizeValidationError") {
+      return res.status(400).json({ error: e.errors.map((x) => x.message).join(", ") });
+    }
+
+    res.status(500).json({ error: "Erreur création advertisement" });
+  }
 });
+
 router.put("/advertisements/:id", async (req, res) => {
   const row = await Advertisement.findByPk(req.params.id);
   if (!row) return res.status(404).json({ error: "Advertisement not found" });
